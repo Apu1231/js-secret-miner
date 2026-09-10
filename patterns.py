@@ -226,7 +226,7 @@ SIGNATURES = [
     {
         "name": "GENERIC_API_KEY",
         "pattern": re.compile(
-            r"(?i)(?:api[_-]?key|apikey|access[_-]?key|secret[_-]?key)[\"'\s]{0,3}[:=][\"'\s]{0,3}([A-Za-z0-9_\-]{16,64})"
+            r"(?i)(?:api[_-]?key|apikey|access[_-]?key|secret[_-]?key)[\"'\s]{0,3}[:=][\"'\s]{0,3}([A-Za-z0-9_\-]{4,64})"
         ),
         "severity": "medium",
         "description": "Generic API Key assignment",
@@ -234,7 +234,7 @@ SIGNATURES = [
     {
         "name": "GENERIC_SECRET",
         "pattern": re.compile(
-            r"(?i)(?:client[_-]?secret|app[_-]?secret|secret)[\"'\s]{0,3}[:=][\"'\s]{0,3}([A-Za-z0-9_\-!@#$%^&*]{8,64})"
+            r"(?i)(?:client[_-]?secret|app[_-]?secret|secret)[\"'\s]{0,3}[:=][\"'\s]{0,3}([A-Za-z0-9_\-!@#$%^&*]{4,64})"
         ),
         "severity": "medium",
         "description": "Generic secret assignment",
@@ -242,7 +242,7 @@ SIGNATURES = [
     {
         "name": "GENERIC_TOKEN",
         "pattern": re.compile(
-            r"(?i)(?:auth[_-]?token|access[_-]?token|bearer[_-]?token)[\"'\s]{0,3}[:=][\"'\s]{0,3}([A-Za-z0-9_\-\.]{16,256})"
+            r"(?i)(?:auth[_-]?token|access[_-]?token|bearer[_-]?token)[\"'\s]{0,3}[:=][\"'\s]{0,3}([A-Za-z0-9_\-\.]{6,256})"
         ),
         "severity": "medium",
         "description": "Generic auth/access token assignment",
