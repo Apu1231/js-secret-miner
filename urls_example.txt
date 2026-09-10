@@ -1,0 +1,7 @@
+# One JS file URL or local path per line.
+# Lines starting with # are ignored.
+
+https://example.com/static/js/app.js
+https://example.com/static/js/vendor.bundle.js
+https://cdn.example.com/assets/main.js
+# ./local/path/to/downloaded.js
