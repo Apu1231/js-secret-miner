@@ -33,7 +33,7 @@ the line number it was found on — ready to drop straight into a bug bounty rep
 ## Installation
 
 ```bash
-git clone https://github.com/<your-username>/js-secret-miner.git
+git clone https://github.com/Apu1231/js-secret-miner.git
 cd js-secret-miner
 pip install -r requirements.txt
 ```
