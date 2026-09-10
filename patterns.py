@@ -48,6 +48,24 @@ SIGNATURES = [
         "description": "Google API Key",
     },
     {
+        "name": "GEMINI_API_KEY",
+        "pattern": re.compile(r"(AQ\.[A-Za-z0-9_\-]{20,120})"),
+        "severity": "critical",
+        "description": "Google Gemini API Key",
+    },
+    {
+        "name": "OPENAI_API_KEY",
+        "pattern": re.compile(r"(sk-(?:proj-)?[A-Za-z0-9_\-]{20,161})"),
+        "severity": "critical",
+        "description": "OpenAI API Key",
+    },
+    {
+        "name": "ANTHROPIC_API_KEY",
+        "pattern": re.compile(r"(sk-ant-[A-Za-z0-9_\-]{20,161})"),
+        "severity": "critical",
+        "description": "Anthropic API Key",
+    },
+    {
         "name": "GOOGLE_OAUTH_ID",
         "pattern": re.compile(r"([0-9]+-[0-9A-Za-z_]{32}\.apps\.googleusercontent\.com)"),
         "severity": "medium",
@@ -226,7 +244,7 @@ SIGNATURES = [
     {
         "name": "GENERIC_API_KEY",
         "pattern": re.compile(
-            r"(?i)(?:api[_-]?key|apikey|access[_-]?key|secret[_-]?key)[\"'\s]{0,3}[:=][\"'\s]{0,3}([A-Za-z0-9_\-]{4,64})"
+            r"(?i)(?:api[_-]?key|apikey|access[_-]?key|secret[_-]?key)[\"'\s]{0,3}[:=][\"'\s]{0,3}([A-Za-z0-9_\-\.\+/=]{4,500})"
         ),
         "severity": "medium",
         "description": "Generic API Key assignment",
@@ -234,7 +252,7 @@ SIGNATURES = [
     {
         "name": "GENERIC_SECRET",
         "pattern": re.compile(
-            r"(?i)(?:client[_-]?secret|app[_-]?secret|secret)[\"'\s]{0,3}[:=][\"'\s]{0,3}([A-Za-z0-9_\-!@#$%^&*]{4,64})"
+            r"(?i)(?:client[_-]?secret|app[_-]?secret|secret)[\"'\s]{0,3}[:=][\"'\s]{0,3}([A-Za-z0-9_\-\.\+/=!@#$%^&*]{4,500})"
         ),
         "severity": "medium",
         "description": "Generic secret assignment",
@@ -242,7 +260,7 @@ SIGNATURES = [
     {
         "name": "GENERIC_TOKEN",
         "pattern": re.compile(
-            r"(?i)(?:auth[_-]?token|access[_-]?token|bearer[_-]?token)[\"'\s]{0,3}[:=][\"'\s]{0,3}([A-Za-z0-9_\-\.]{6,256})"
+            r"(?i)(?:auth[_-]?token|access[_-]?token|bearer[_-]?token)[\"'\s]{0,3}[:=][\"'\s]{0,3}([A-Za-z0-9_\-\.\+/=]{6,500})"
         ),
         "severity": "medium",
         "description": "Generic auth/access token assignment",
@@ -250,7 +268,7 @@ SIGNATURES = [
     {
         "name": "HARDCODED_PASSWORD",
         "pattern": re.compile(
-            r"(?i)(?:password|passwd|pwd)[\"'\s]{0,3}[:=][\"'\s]{0,3}([^\s\"',;]{4,64})"
+            r"(?i)(?:password|passwd|pwd)[\"'\s]{0,3}[:=][\"'\s]{0,3}([^\s\"',;]{3,500})"
         ),
         "severity": "high",
         "description": "Hardcoded password assignment",
@@ -258,7 +276,7 @@ SIGNATURES = [
     {
         "name": "HARDCODED_USERNAME",
         "pattern": re.compile(
-            r"(?i)(?:username|user[_-]?id|userid)[\"'\s]{0,3}[:=][\"'\s]{0,3}([^\s\"',;]{3,64})"
+            r"(?i)(?:username|user[_-]?id|userid)[\"'\s]{0,3}[:=][\"'\s]{0,3}([^\s\"',;]{2,500})"
         ),
         "severity": "low",
         "description": "Hardcoded username / user ID assignment",
