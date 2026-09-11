@@ -167,6 +167,10 @@ program's terms of service. The authors take no responsibility for misuse.
 Pull requests adding new detection signatures, fixing false positives, or
 improving performance are welcome. Please open an issue first for larger changes.
 
+## Author
+
+Built by [@I_am_JrHa4er](https://x.com/I_am_JrHa4er) — feel free to reach out or follow for more bug bounty tooling.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
