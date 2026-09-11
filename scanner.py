@@ -19,6 +19,7 @@ from typing import List, Optional
 import requests
 
 from patterns import get_signatures
+from context_rules import find_contextual_matches
 
 DEFAULT_HEADERS = {
     "User-Agent": (
@@ -44,6 +45,8 @@ class Finding:
     source: str          # URL or file path the secret was found in
     line_number: int
     context: str = ""     # small snippet of surrounding code
+    raw: str = ""          # exact "identifier=value" text as it appears in code
+    is_contextual: bool = False  # True if found via variable-name context, not a fixed format
 
     def fingerprint(self) -> str:
         """Unique key used for de-duplication."""
@@ -117,10 +120,14 @@ def fetch_source(location: str, timeout: int = 15, retries: int = 2) -> ScanResu
 
 
 def scan_text(content: str, source: str, filter_noise: bool = True) -> List[Finding]:
-    """Run all signatures against a blob of text and return Finding objects."""
+    """
+    Run all format-specific signatures AND the context-aware identifier
+    scanner against a blob of text, then merge + de-duplicate the results.
+    """
     findings: List[Finding] = []
     seen = set()
 
+    # ---- Pass 1: fixed-format signatures (AWS, Stripe, JWT, DB URIs...) ----
     for sig in get_signatures():
         for match in sig["pattern"].finditer(content):
             value = match.group(1) if match.groups() else match.group(0)
@@ -142,6 +149,7 @@ def scan_text(content: str, source: str, filter_noise: bool = True) -> List[Find
                 source=source,
                 line_number=line_no,
                 context=snippet,
+                is_contextual=False,
             )
 
             fp = finding.fingerprint()
@@ -150,7 +158,57 @@ def scan_text(content: str, source: str, filter_noise: bool = True) -> List[Find
             seen.add(fp)
             findings.append(finding)
 
-    return findings
+    # ---- Pass 2: context-aware identifier scan (api_key=, user_email=, etc.) ----
+    for m in find_contextual_matches(content):
+        value = m["value"]
+        if not value:
+            continue
+        if filter_noise and _looks_like_noise(value):
+            continue
+
+        line_no = _line_number_for_offset(content, m["start"])
+        snippet = _context_snippet(content, m["start"], m["end"])
+
+        finding = Finding(
+            rule_name=m["identifier"],
+            severity=m["severity"],
+            description=f"Exposed value assigned to '{m['identifier']}'",
+            value=value,
+            source=source,
+            line_number=line_no,
+            context=snippet,
+            raw=m["raw"],
+            is_contextual=True,
+        )
+
+        fp = finding.fingerprint()
+        if fp in seen:
+            continue
+        seen.add(fp)
+        findings.append(finding)
+
+    return _dedupe_by_value(findings)
+
+
+def _dedupe_by_value(findings: List[Finding]) -> List[Finding]:
+    """
+    When the same value is caught by both a fixed-format signature and the
+    context-aware scanner, keep the context-aware one (it shows the real
+    variable name from the code, which is more useful) and drop the other.
+    """
+    by_value = {}
+    for f in findings:
+        by_value.setdefault((f.value, f.source), []).append(f)
+
+    result = []
+    for (_value, _source), group in by_value.items():
+        contextual = [f for f in group if f.is_contextual]
+        if contextual:
+            result.extend(contextual)
+        else:
+            result.extend(group)
+
+    return result
 
 
 def scan_location(location: str, timeout: int = 15, filter_noise: bool = True) -> ScanResult:
