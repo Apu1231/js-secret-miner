@@ -66,6 +66,12 @@ SIGNATURES = [
         "description": "Anthropic API Key",
     },
     {
+        "name": "GROQ_API_KEY",
+        "pattern": re.compile(r"(gsk_[A-Za-z0-9]{20,80})"),
+        "severity": "critical",
+        "description": "Groq API Key",
+    },
+    {
         "name": "GOOGLE_OAUTH_ID",
         "pattern": re.compile(r"([0-9]+-[0-9A-Za-z_]{32}\.apps\.googleusercontent\.com)"),
         "severity": "medium",
@@ -241,46 +247,14 @@ SIGNATURES = [
     },
 
     # ------------------------------------------------ Generic patterns
-    {
-        "name": "GENERIC_API_KEY",
-        "pattern": re.compile(
-            r"(?i)(?:api[_-]?key|apikey|access[_-]?key|secret[_-]?key)[\"'\s]{0,3}[:=][\"'\s]{0,3}([A-Za-z0-9_\-\.\+/=]{4,500})"
-        ),
-        "severity": "medium",
-        "description": "Generic API Key assignment",
-    },
-    {
-        "name": "GENERIC_SECRET",
-        "pattern": re.compile(
-            r"(?i)(?:client[_-]?secret|app[_-]?secret|secret)[\"'\s]{0,3}[:=][\"'\s]{0,3}([A-Za-z0-9_\-\.\+/=!@#$%^&*]{4,500})"
-        ),
-        "severity": "medium",
-        "description": "Generic secret assignment",
-    },
-    {
-        "name": "GENERIC_TOKEN",
-        "pattern": re.compile(
-            r"(?i)(?:auth[_-]?token|access[_-]?token|bearer[_-]?token)[\"'\s]{0,3}[:=][\"'\s]{0,3}([A-Za-z0-9_\-\.\+/=]{6,500})"
-        ),
-        "severity": "medium",
-        "description": "Generic auth/access token assignment",
-    },
-    {
-        "name": "HARDCODED_PASSWORD",
-        "pattern": re.compile(
-            r"(?i)(?:password|passwd|pwd)[\"'\s]{0,3}[:=][\"'\s]{0,3}([^\s\"',;]{3,500})"
-        ),
-        "severity": "high",
-        "description": "Hardcoded password assignment",
-    },
-    {
-        "name": "HARDCODED_USERNAME",
-        "pattern": re.compile(
-            r"(?i)(?:username|user[_-]?id|userid)[\"'\s]{0,3}[:=][\"'\s]{0,3}([^\s\"',;]{2,500})"
-        ),
-        "severity": "low",
-        "description": "Hardcoded username / user ID assignment",
-    },
+    # NOTE: Free-form "identifier = value" secrets (api_key, user_email,
+    # user_phone, password, custom var names, etc.) are NOT handled here
+    # anymore — they're covered by the context-aware scanner in
+    # scanner.py (scan_contextual), which reports the *actual* variable
+    # name found in the code instead of a generic bucket name. Keep this
+    # file focused on fixed, provider-specific value FORMATS that are
+    # identifiable even with no variable name context at all (e.g. a key
+    # sitting alone in a minified bundle or config blob).
     {
         "name": "BASIC_AUTH_URL",
         "pattern": re.compile(r"([a-zA-Z][a-zA-Z0-9+.\-]*://[^\s\"'/@]+:[^\s\"'/@]+@[^\s\"'/]+)"),
